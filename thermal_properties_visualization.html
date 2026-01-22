@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thermal Properties Visualization - SBED Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #f3f4f6;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+    </style>
+</head>
+<body class="p-6">
+    <div id="app" class="w-full max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+        <!-- Header with logo and name -->
+        <div class="flex items-center justify-between mb-6 pb-4 border-b-2 border-gray-200">
+            <div class="flex-1">
+                <h1 class="text-3xl font-bold mb-1 text-gray-800">Thermal Properties Visualization</h1>
+                <p class="text-gray-600">Meeting Room Analogy: Watch how an "idea" spreads through a room</p>
+                <p class="text-sm text-gray-500 mt-2">Dr. Nuha AlJuneidi | Lawrence Technological University</p>
+            </div>
+            <div class="flex flex-col items-center ml-6">
+                <!-- SBED Lab Logo -->
+                <svg width="120" height="120" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Buildings -->
+                    <rect x="70" y="40" width="25" height="60" fill="#1e3a5f" stroke="#0ea5e9" stroke-width="3"/>
+                    <rect x="100" y="30" width="30" height="70" fill="#1e3a5f" stroke="#0ea5e9" stroke-width="3"/>
+                    <rect x="135" y="45" width="20" height="55" fill="#1e3a5f" stroke="#0ea5e9" stroke-width="3"/>
+                    <!-- Windows -->
+                    <rect x="75" y="45" width="5" height="7" fill="white"/>
+                    <rect x="82" y="45" width="5" height="7" fill="white"/>
+                    <rect x="75" y="55" width="5" height="7" fill="white"/>
+                    <rect x="82" y="55" width="5" height="7" fill="white"/>
+                    <rect x="75" y="65" width="5" height="7" fill="white"/>
+                    <rect x="82" y="65" width="5" height="7" fill="white"/>
+                    <rect x="105" y="38" width="5" height="7" fill="white"/>
+                    <rect x="113" y="38" width="5" height="7" fill="white"/>
+                    <rect x="121" y="38" width="5" height="7" fill="white"/>
+                    <rect x="105" y="50" width="5" height="7" fill="white"/>
+                    <rect x="113" y="50" width="5" height="7" fill="white"/>
+                    <rect x="121" y="50" width="5" height="7" fill="white"/>
+                    <rect x="105" y="62" width="5" height="7" fill="white"/>
+                    <rect x="113" y="62" width="5" height="7" fill="white"/>
+                    <rect x="121" y="62" width="5" height="7" fill="white"/>
+                    <rect x="140" y="52" width="4" height="6" fill="white"/>
+                    <rect x="146" y="52" width="4" height="6" fill="white"/>
+                    <rect x="140" y="62" width="4" height="6" fill="white"/>
+                    <rect x="146" y="62" width="4" height="6" fill="white"/>
+                    <!-- Wave pattern -->
+                    <path d="M 30 110 Q 50 100 70 110 T 110 110 Q 130 100 150 110 T 190 110" 
+                          stroke="#0ea5e9" stroke-width="3" fill="none"/>
+                    <path d="M 30 117 Q 50 107 70 117 T 110 117 Q 130 107 150 117 T 190 117" 
+                          stroke="#0ea5e9" stroke-width="2" fill="none" opacity="0.7"/>
+                    <path d="M 30 124 Q 50 114 70 124 T 110 124 Q 130 114 150 124 T 190 124" 
+                          stroke="#10b981" stroke-width="2" fill="none" opacity="0.6"/>
+                    <!-- Network nodes -->
+                    <circle cx="25" cy="60" r="6" fill="#0ea5e9"/>
+                    <circle cx="35" cy="70" r="4" fill="#0ea5e9"/>
+                    <circle cx="40" cy="55" r="4" fill="#0ea5e9"/>
+                    <line x1="25" y1="60" x2="35" y2="70" stroke="#0ea5e9" stroke-width="2"/>
+                    <line x1="25" y1="60" x2="40" y2="55" stroke="#0ea5e9" stroke-width="2"/>
+                    <circle cx="175" cy="65" r="4" fill="#10b981"/>
+                    <circle cx="183" cy="75" r="5" fill="#10b981"/>
+                    <circle cx="168" cy="80" r="4" fill="#10b981"/>
+                    <line x1="175" y1="65" x2="183" y2="75" stroke="#10b981" stroke-width="2"/>
+                </svg>
+                <div class="text-center mt-2">
+                    <div class="text-lg font-bold text-gray-700">SBED LAB</div>
+                    <div class="text-xs text-gray-600">Smart Building Energy Dynamics</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Visualization Panel -->
+            <div class="space-y-4">
+                <div class="border-2 border-gray-300 rounded-lg p-4 bg-gray-50">
+                    <svg id="visualization" width="400" height="400"></svg>
+                </div>
+                
+                <!-- Controls -->
+                <div class="flex gap-2 justify-center">
+                    <button id="playBtn" class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                        ▶ Spread Idea
+                    </button>
+                    <button id="resetBtn" class="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">
+                        ↻ Reset
+                    </button>
+                </div>
+                
+                <!-- Material Presets -->
+                <div>
+                    <h3 class="font-semibold mb-2 text-gray-700">Material Presets:</h3>
+                    <div class="grid grid-cols-2 gap-2" id="materialButtons"></div>
+                </div>
+            </div>
+            
+            <!-- Property Controls and Info -->
+            <div class="space-y-4">
+                <!-- Sliders -->
+                <div class="space-y-4 border-2 border-gray-300 rounded-lg p-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            k - Thermal Conductivity: <span id="kValue">1.40</span> W/m·K
+                        </label>
+                        <input type="range" id="kSlider" min="0.01" max="400" step="0.01" value="1.4" class="w-full">
+                        <p class="text-xs text-gray-600 mt-1">
+                            <strong>Analogy:</strong> How easily the idea can be passed (communication clarity)
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            ρ - Density: <span id="rhoValue">2300</span> kg/m³
+                        </label>
+                        <input type="range" id="rhoSlider" min="25" max="9000" step="1" value="2300" class="w-full">
+                        <p class="text-xs text-gray-600 mt-1">
+                            <strong>Analogy:</strong> How many people are in the room (crowdedness)
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">
+                            cp - Specific Heat: <span id="cpValue">880</span> J/kg·K
+                        </label>
+                        <input type="range" id="cpSlider" min="385" max="4200" step="1" value="880" class="w-full">
+                        <p class="text-xs text-gray-600 mt-1">
+                            <strong>Analogy:</strong> How much each person needs to hear before accepting the idea
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Calculated Properties -->
+                <div class="border-2 border-green-300 bg-green-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">Calculated Properties:</h3>
+                    <div class="space-y-2 text-sm">
+                        <div>
+                            <strong>ρcp (Volumetric Heat Capacity):</strong> <span id="rhoCpValue">2.02</span> MJ/m³·K
+                            <p class="text-xs text-gray-600">Total "resistance" in room = people × stubbornness</p>
+                        </div>
+                        <div>
+                            <strong>α (Thermal Diffusivity):</strong> <span id="alphaValue">0.69</span> × 10⁻⁶ m²/s
+                            <p class="text-xs text-gray-600">How fast the idea reaches the back of the room</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Interpretation -->
+                <div class="border-2 border-blue-300 bg-blue-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">What This Means:</h3>
+                    <div class="text-sm space-y-2" id="interpretation"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Material presets
+        const materials = {
+            copper: { k: 400, rho: 8960, cp: 385, name: 'Copper' },
+            aluminum: { k: 205, rho: 2700, cp: 900, name: 'Aluminum' },
+            steel: { k: 50, rho: 7850, cp: 480, name: 'Steel' },
+            concrete: { k: 1.4, rho: 2300, cp: 880, name: 'Concrete' },
+            water: { k: 0.6, rho: 1000, cp: 4180, name: 'Water' },
+            wood: { k: 0.12, rho: 500, cp: 2500, name: 'Wood (Pine)' },
+            brick: { k: 0.7, rho: 1800, cp: 840, name: 'Brick' },
+            fiberglass: { k: 0.04, rho: 25, cp: 840, name: 'Fiberglass Insulation' },
+        };
+
+        let k = 1.4, rho = 2300, cp = 880;
+        let time = 0;
+        let isPlaying = false;
+        let animationInterval = null;
+        let selectedMaterial = 'concrete';
+
+        const gridSize = 20;
+        const cellSize = 20;
+
+        // Create material buttons
+        const buttonContainer = document.getElementById('materialButtons');
+        Object.entries(materials).forEach(([key, mat]) => {
+            const btn = document.createElement('button');
+            btn.textContent = mat.name;
+            btn.className = 'px-3 py-2 rounded text-sm bg-gray-200 text-gray-800 hover:bg-gray-300';
+            btn.onclick = () => loadMaterial(key);
+            buttonContainer.appendChild(btn);
+        });
+
+        // Sliders
+        const kSlider = document.getElementById('kSlider');
+        const rhoSlider = document.getElementById('rhoSlider');
+        const cpSlider = document.getElementById('cpSlider');
+
+        kSlider.oninput = () => { k = parseFloat(kSlider.value); updateDisplay(); reset(); };
+        rhoSlider.oninput = () => { rho = parseFloat(rhoSlider.value); updateDisplay(); reset(); };
+        cpSlider.oninput = () => { cp = parseFloat(cpSlider.value); updateDisplay(); reset(); };
+
+        // Buttons
+        document.getElementById('playBtn').onclick = togglePlay;
+        document.getElementById('resetBtn').onclick = reset;
+
+        function loadMaterial(key) {
+            const mat = materials[key];
+            k = mat.k;
+            rho = mat.rho;
+            cp = mat.cp;
+            selectedMaterial = key;
+            
+            kSlider.value = k;
+            rhoSlider.value = rho;
+            cpSlider.value = cp;
+            
+            updateDisplay();
+            reset();
+        }
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            const btn = document.getElementById('playBtn');
+            if (isPlaying) {
+                btn.innerHTML = '⏸ Pause';
+                animationInterval = setInterval(() => {
+                    time += 0.5;
+                    drawVisualization();
+                }, 50);
+            } else {
+                btn.innerHTML = '▶ Spread Idea';
+                clearInterval(animationInterval);
+            }
+        }
+
+        function reset() {
+            time = 0;
+            isPlaying = false;
+            document.getElementById('playBtn').innerHTML = '▶ Spread Idea';
+            clearInterval(animationInterval);
+            drawVisualization();
+        }
+
+        function updateDisplay() {
+            document.getElementById('kValue').textContent = k.toFixed(2);
+            document.getElementById('rhoValue').textContent = rho.toFixed(0);
+            document.getElementById('cpValue').textContent = cp.toFixed(0);
+            
+            const rhoCp = (rho * cp) / 1e6;
+            const alpha = k / (rho * cp) * 1e6;
+            
+            document.getElementById('rhoCpValue').textContent = rhoCp.toFixed(2);
+            document.getElementById('alphaValue').textContent = alpha.toFixed(2);
+            
+            const interpretation = document.getElementById('interpretation');
+            interpretation.innerHTML = `
+                <p><strong>High α (fast spread):</strong> ${alpha > 10 ? '✓' : '○'} Idea reaches back quickly<br>
+                <span class="text-xs text-gray-600">→ Either great communication (high k) OR few stubborn people (low ρcp)</span></p>
+                <p><strong>Low α (slow spread):</strong> ${alpha < 1 ? '✓' : '○'} Idea takes forever to propagate<br>
+                <span class="text-xs text-gray-600">→ Either poor communication (low k) OR many stubborn people (high ρcp)</span></p>
+                <p class="text-xs italic text-gray-700 mt-3 pt-3 border-t border-blue-200">
+                In thermal terms: This is how fast temperature changes penetrate through a material!</p>
+            `;
+        }
+
+        function drawVisualization() {
+            const svg = document.getElementById('visualization');
+            svg.innerHTML = '';
+
+            const alpha = k / (rho * cp);
+            const normalizedAlpha = Math.log10(alpha * 1e6 + 1) / 6;
+            
+            const densityRatio = (rho - 25) / (9000 - 25);
+            const peopleSpacing = Math.max(1, Math.floor(4 - densityRatio * 3));
+            
+            const maxCp = 4200;
+            const minCp = 385;
+            const cpFactor = (cp - minCp) / (maxCp - minCp);
+            const resistance = 1 + cpFactor * 2;
+            
+            const spreadRadius = time * normalizedAlpha * 15;
+            
+            const maxK = 400;
+            const kFactor = Math.min(k / maxK, 1);
+            
+            // Draw people
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    if (x % peopleSpacing === 0 && y % peopleSpacing === 0) {
+                        const centerX = gridSize / 2;
+                        const centerY = gridSize / 2;
+                        const relX = x - centerX;
+                        const relY = y - centerY;
+                        const distance = Math.sqrt(relX * relX + relY * relY);
+                        const gotIdea = distance < spreadRadius / resistance;
+                        
+                        const opacity = gotIdea ? (0.3 + kFactor * 0.7) : 0.2;
+                        const color = gotIdea ? '#ef4444' : '#94a3b8';
+                        
+                        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                        circle.setAttribute('cx', x * cellSize + cellSize / 2);
+                        circle.setAttribute('cy', y * cellSize + cellSize / 2);
+                        circle.setAttribute('r', cellSize / 3);
+                        circle.setAttribute('fill', color);
+                        circle.setAttribute('opacity', opacity);
+                        svg.appendChild(circle);
+                    }
+                }
+            }
+            
+            // Starting point
+            const center = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            center.setAttribute('cx', gridSize * cellSize / 2);
+            center.setAttribute('cy', gridSize * cellSize / 2);
+            center.setAttribute('r', 8);
+            center.setAttribute('fill', '#fbbf24');
+            center.setAttribute('stroke', '#f59e0b');
+            center.setAttribute('stroke-width', 2);
+            svg.appendChild(center);
+        }
+
+        // Initialize
+        updateDisplay();
+        drawVisualization();
+    </script>
+</body>
+</html>
